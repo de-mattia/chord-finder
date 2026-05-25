@@ -32,20 +32,28 @@ function Fretboard({
 
   return (
     <svg viewBox={viewBox} className="fretboard-svg" aria-label="Gitarren-Griffbrett">
+      <defs>
+        <linearGradient id="wood-grain" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stopColor="#e5c29f" />
+          <stop offset="40%" stopColor="#d4a66d" />
+          <stop offset="100%" stopColor="#b17a49" />
+        </linearGradient>
+      </defs>
+
       <rect
         x={svgConfig.left - 18}
         y={svgConfig.top - 18}
         width={svgConfig.boardWidth + 36}
         height={svgConfig.boardHeight + 36}
         rx={24}
-        fill="#f0f2f8"
+        fill="url(#wood-grain)"
       />
 
       {svgConfig.stringPositions.map((y, index) => (
         <line
           key={`string-${index}`}
           x1={svgConfig.left}
-          x2={svgConfig.left + svgConfig.boardWidth}
+          x2={svgConfig.left + svgConfig.boardWidth + 18}
           y1={y}
           y2={y}
           className="fret-string"

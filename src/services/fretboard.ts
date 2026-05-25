@@ -1,7 +1,7 @@
 export const strings = ['E', 'A', 'D', 'G', 'B', 'e']
-export const totalFrets = 12
+export const totalFrets = 15
 export const fretNumbers = Array.from({ length: totalFrets + 1 }, (_, index) => index)
-export const markerFrets = [3, 5, 7, 9, 12]
+export const markerFrets = [3, 5, 7, 9, 12, 15]
 
 export interface SvgConfig {
   width: number

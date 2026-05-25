@@ -11,32 +11,20 @@ function App() {
 
   return (
     <main className="app-shell">
-      <section className="hero-section">
-        <p className="eyebrow">Gitarren-Akkordfinder</p>
-        <h1>Finde Bünde und zoom direkt auf deinen Griffbrettbereich</h1>
-        <p>
-          Wähle einen Bund von 0 bis 12, um den Bereich +/- 3 Bünde fokussiert auf dem
-          Gitarrenhals anzuzeigen. Klicke erneut zum Zurücksetzen.
-        </p>
-      </section>
-
       <section className="fretboard-card">
-        <div className="fretboard-header">
-          <div>
-            <span className="status-label">Aktuelle Ansicht</span>
-            <h2>{selectedFret === null ? 'Gesamtes Griffbrett' : `Zoom auf Bund ${selectedFret}`}</h2>
-          </div>
+        <div className="toolbar">
           <div className="fretboard-meta">
+            <div>{selectedFret === null ? 'Gesamtes Griffbrett' : `Zoom auf Bund ${selectedFret}`}</div>
             <div>Bereich: {visibleRange.start} – {visibleRange.end}</div>
-            <button
-              type="button"
-              className="clear-button"
-              onClick={() => setSelectedFret(null)}
-              disabled={selectedFret === null}
-            >
-              Zurück zur 0–12 Ansicht
-            </button>
           </div>
+          <button
+            type="button"
+            className="clear-button"
+            onClick={() => setSelectedFret(null)}
+            disabled={selectedFret === null}
+          >
+            Zurück
+          </button>
         </div>
 
         <Fretboard
