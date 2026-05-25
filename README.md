@@ -73,3 +73,11 @@ export default defineConfig([
   },
 ])
 ```
+
+## GitHub Pages Deployment
+
+This repository is configured to deploy automatically to GitHub Pages when you push to `main` or `master`.
+
+The GitHub Actions workflow builds the Vite app and publishes the `dist` folder to the `gh-pages` branch.
+
+If you want to test deployment manually, you can also run the workflow from the Actions tab.
