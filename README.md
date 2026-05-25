@@ -81,3 +81,15 @@ This repository is configured to deploy automatically to GitHub Pages when you p
 The GitHub Actions workflow builds the Vite app and publishes the `dist` folder to the `gh-pages` branch.
 
 If you want to test deployment manually, you can also run the workflow from the Actions tab.
+
+### Main branch Pages deployment
+
+This workflow now deploys the built app directly from `main` by writing the generated site into the `docs/` folder and committing it back to `main`.
+
+Make sure GitHub Pages is configured to use the `main` branch and the `docs/` folder as source.
+
+### Main branch Pages deployment
+
+This workflow now deploys the built app directly from `main` by writing the generated site into the `docs/` folder and committing it back to `main`.
+
+Make sure GitHub Pages is configured to use the `main` branch and the `docs/` folder as source.
