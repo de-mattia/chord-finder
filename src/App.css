@@ -1,0 +1,197 @@
+:root {
+  color: #1f2937;
+  background: #eef2ff;
+  font-family: Inter, system-ui, sans-serif;
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+  background: #eef2ff;
+  color: #1f2937;
+}
+
+#root {
+  width: min(1200px, 100%);
+  margin: 0 auto;
+  padding: 24px;
+}
+
+.app-shell {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.hero-section {
+  text-align: center;
+  padding: 24px 16px;
+}
+
+.eyebrow {
+  display: inline-block;
+  margin-bottom: 14px;
+  color: #6366f1;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  font-size: 0.85rem;
+}
+
+.hero-section h1 {
+  margin: 0;
+  font-size: clamp(2rem, 3.5vw, 3rem);
+  letter-spacing: -0.04em;
+}
+
+.hero-section p {
+  max-width: 740px;
+  margin: 18px auto 0;
+  color: #4b5563;
+}
+
+.fretboard-card {
+  background: #ffffff;
+  border: 1px solid rgba(148, 163, 184, 0.18);
+  border-radius: 28px;
+  box-shadow: 0 20px 50px rgba(15, 23, 42, 0.08);
+  padding: 28px;
+}
+
+.fretboard-header {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.fretboard-header h2 {
+  margin: 0;
+  font-size: 1.4rem;
+}
+
+.status-label {
+  display: block;
+  margin-bottom: 8px;
+  color: #6366f1;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 0.75rem;
+}
+
+.fretboard-meta {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.fretboard-meta div {
+  color: #475569;
+  font-weight: 600;
+}
+
+.clear-button {
+  border: none;
+  background: #6366f1;
+  color: white;
+  padding: 12px 18px;
+  border-radius: 999px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.clear-button:hover:not(:disabled) {
+  transform: translateY(-1px);
+  background: #4f46e5;
+}
+
+.clear-button:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.fretboard-svg {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.fret-string {
+  stroke: #374151;
+  stroke-width: 2;
+}
+
+.fret-line,
+.fret-nut {
+  stroke: #334155;
+}
+
+.fret-nut {
+  stroke-linecap: round;
+}
+
+.fret-marker {
+  fill: #4f46e5;
+}
+
+.fret-click-area {
+  cursor: pointer;
+}
+
+.fret-click-area:hover + .fret-label,
+.fret-click-area:hover ~ .fret-label {
+  fill: #4338ca;
+}
+
+.fret-label {
+  fill: #334155;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.fret-hover-label {
+  fill: #1d4ed8;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.string-label {
+  fill: #334155;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+@media (max-width: 768px) {
+  #root {
+    padding: 16px;
+  }
+
+  .fretboard-card {
+    padding: 20px;
+  }
+
+  .fretboard-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .fretboard-meta {
+    justify-content: flex-start;
+  }
+}
