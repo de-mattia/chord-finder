@@ -6,21 +6,16 @@ import {
   getVisibleArea,
   markerFrets,
   strings,
-  type HoveredCell,
 } from '../services/fretboard'
 
 interface FretboardProps {
   selectedFret: number | null
-  hoveredCell: HoveredCell | null
   onSelectFret: (fret: number) => void
-  onHoverCell: (cell: HoveredCell | null) => void
 }
 
 function Fretboard({
   selectedFret,
-  hoveredCell,
   onSelectFret,
-  onHoverCell,
 }: FretboardProps) {
   const svgConfig = useMemo(() => createSvgConfig(), [])
   const visibleArea = useMemo(
@@ -54,8 +49,6 @@ function Fretboard({
       {svgConfig.stringPositions.map((y, stringIndex) =>
         svgConfig.fretPositions.map((x, fret) => {
           const note = getNoteForStringFret(stringIndex, fret)
-          const isHovered =
-            hoveredCell?.fret === fret && hoveredCell?.stringIndex === stringIndex
 
           return (
             <text
@@ -64,9 +57,7 @@ function Fretboard({
               y={y}
               textAnchor="middle"
               dominantBaseline="middle"
-              className={`note-grid-label ${isHovered ? 'note-grid-label--hovered' : ''}`}
-              onMouseEnter={() => onHoverCell({ fret, stringIndex })}
-              onMouseLeave={() => onHoverCell(null)}
+              className="note-grid-label"
             >
               {note}
             </text>

@@ -126,14 +126,6 @@ body {
   font-size: 9px;
   font-weight: 700;
   opacity: 0.35;
-  cursor: help;
-  transition: fill 0.2s ease, opacity 0.2s ease, font-size 0.2s ease;
-}
-
-.note-grid-label--hovered {
-  fill: #1d4ed8;
-  opacity: 1;
-  font-size: 11px;
 }
 
 .fret-label {
