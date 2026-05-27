@@ -1,11 +1,11 @@
 import { useState } from 'react'
 import Fretboard from './components/Fretboard'
-import { getVisibleRange } from './services/fretboard'
+import { getVisibleRange, type HoveredCell } from './services/fretboard'
 import './App.css'
 
 function App() {
   const [selectedFret, setSelectedFret] = useState<number | null>(null)
-  const [hoverFret, setHoverFret] = useState<number | null>(null)
+  const [hoveredCell, setHoveredCell] = useState<HoveredCell | null>(null)
 
   const visibleRange = getVisibleRange(selectedFret)
 
@@ -29,9 +29,9 @@ function App() {
 
         <Fretboard
           selectedFret={selectedFret}
-          hoverFret={hoverFret}
+          hoveredCell={hoveredCell}
           onSelectFret={setSelectedFret}
-          onHoverFret={setHoverFret}
+          onHoverCell={setHoveredCell}
         />
       </section>
     </main>

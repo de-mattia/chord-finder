@@ -1,24 +1,26 @@
 import { useMemo } from 'react'
 import {
   createSvgConfig,
+  getNoteForStringFret,
   getViewBox,
   getVisibleArea,
   markerFrets,
   strings,
+  type HoveredCell,
 } from '../services/fretboard'
 
 interface FretboardProps {
   selectedFret: number | null
-  hoverFret: number | null
+  hoveredCell: HoveredCell | null
   onSelectFret: (fret: number) => void
-  onHoverFret: (fret: number | null) => void
+  onHoverCell: (cell: HoveredCell | null) => void
 }
 
 function Fretboard({
   selectedFret,
-  hoverFret,
+  hoveredCell,
   onSelectFret,
-  onHoverFret,
+  onHoverCell,
 }: FretboardProps) {
   const svgConfig = useMemo(() => createSvgConfig(), [])
   const visibleArea = useMemo(
@@ -48,6 +50,29 @@ function Fretboard({
         rx={24}
         fill="url(#wood-grain)"
       />
+
+      {svgConfig.stringPositions.map((y, stringIndex) =>
+        svgConfig.fretPositions.map((x, fret) => {
+          const note = getNoteForStringFret(stringIndex, fret)
+          const isHovered =
+            hoveredCell?.fret === fret && hoveredCell?.stringIndex === stringIndex
+
+          return (
+            <text
+              key={`note-${stringIndex}-${fret}`}
+              x={x}
+              y={y}
+              textAnchor="middle"
+              dominantBaseline="middle"
+              className={`note-grid-label ${isHovered ? 'note-grid-label--hovered' : ''}`}
+              onMouseEnter={() => onHoverCell({ fret, stringIndex })}
+              onMouseLeave={() => onHoverCell(null)}
+            >
+              {note}
+            </text>
+          )
+        }),
+      )}
 
       {svgConfig.stringPositions.map((y, index) => (
         <line
@@ -93,8 +118,6 @@ function Fretboard({
               fill="transparent"
               className="fret-click-area"
               onClick={() => onSelectFret(fret)}
-              onMouseEnter={() => onHoverFret(fret)}
-              onMouseLeave={() => onHoverFret(null)}
             />
 
             <text
@@ -105,17 +128,6 @@ function Fretboard({
             >
               {fret}
             </text>
-
-            {hoverFret === fret && (
-              <text
-                x={x}
-                y={svgConfig.top - 14}
-                textAnchor="middle"
-                className="fret-hover-label"
-              >
-                Bund {fret}
-              </text>
-            )}
           </g>
         )
       })}

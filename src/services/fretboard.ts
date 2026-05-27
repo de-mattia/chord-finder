@@ -3,6 +3,63 @@ export const totalFrets = 15
 export const fretNumbers = Array.from({ length: totalFrets + 1 }, (_, index) => index)
 export const markerFrets = [3, 5, 7, 9, 12, 15]
 
+export interface HoveredCell {
+  fret: number
+  stringIndex: number
+}
+
+const chromaticNoteNames = ['C', 'C', 'D', 'D', 'E', 'F', 'F', 'G', 'G', 'A', 'A', 'B']
+
+export function noteToPitchClass(note: string) {
+  const normalized = note.toUpperCase()
+
+  switch (normalized) {
+    case 'C':
+      return 0
+    case 'C#':
+    case 'DB':
+      return 1
+    case 'D':
+      return 2
+    case 'D#':
+    case 'EB':
+      return 3
+    case 'E':
+      return 4
+    case 'F':
+      return 5
+    case 'F#':
+    case 'GB':
+      return 6
+    case 'G':
+      return 7
+    case 'G#':
+    case 'AB':
+      return 8
+    case 'A':
+      return 9
+    case 'A#':
+    case 'BB':
+      return 10
+    case 'B':
+      return 11
+    default:
+      return 0
+  }
+}
+
+export function pitchClassToNoteLetter(pitchClass: number) {
+  const normalizedPitchClass = (pitchClass % 12 + 12) % 12
+
+  return chromaticNoteNames[normalizedPitchClass]
+}
+
+export function getNoteForStringFret(stringIndex: number, fret: number) {
+  const openStringPitchClass = noteToPitchClass(strings[stringIndex])
+
+  return pitchClassToNoteLetter(openStringPitchClass + fret)
+}
+
 export interface SvgConfig {
   width: number
   height: number
