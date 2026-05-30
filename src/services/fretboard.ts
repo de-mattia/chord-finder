@@ -3,7 +3,7 @@ export const totalFrets = 15
 export const fretNumbers = Array.from({ length: totalFrets + 1 }, (_, index) => index)
 export const markerFrets = [3, 5, 7, 9, 12, 15]
 
-const chromaticNoteNames = ['C', 'C', 'D', 'D', 'E', 'F', 'F', 'G', 'G', 'A', 'A', 'B']
+const chromaticNoteNames = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
 
 export function noteToPitchClass(note: string) {
   const normalized = note.toUpperCase()
@@ -77,6 +77,75 @@ export interface VisibleRange {
 export interface VisibleArea {
   x: number
   width: number
+}
+
+export type Mode = 'Dur' | 'Moll'
+
+interface TriadInversion {
+  label: string
+  notes: string[]
+}
+
+const modeTriadIntervals: Record<Mode, number[]> = {
+  Dur: [0, 4, 7],
+  Moll: [0, 3, 7],
+}
+
+const inversionLabels = ['Grundstellung', '1. Umkehrung', '2. Umkehrung'] as const
+
+export function getTriadInversions(rootNote: string, mode: Mode): TriadInversion[] {
+  const rootPitchClass = noteToPitchClass(rootNote)
+  const triadNotes = modeTriadIntervals[mode].map((interval) =>
+    pitchClassToNoteLetter(rootPitchClass + interval),
+  )
+
+  return [
+    { label: inversionLabels[0], notes: triadNotes },
+    { label: inversionLabels[1], notes: [triadNotes[1], triadNotes[2], triadNotes[0]] },
+    { label: inversionLabels[2], notes: [triadNotes[2], triadNotes[0], triadNotes[1]] },
+  ]
+}
+
+export function getVisibleTriadInversions(
+  selectedNote: string,
+  selectedMode: Mode,
+  selectedLowString: string,
+  visibleRange: VisibleRange,
+): string[] {
+  const startStringIndex = strings.findIndex((stringName) => stringName === selectedLowString)
+
+  if (startStringIndex === -1 || startStringIndex > strings.length - 3) {
+    return []
+  }
+
+  const selectedStringIndices = [
+    startStringIndex,
+    startStringIndex + 1,
+    startStringIndex + 2,
+  ]
+  const visibleFrets = Array.from(
+    { length: visibleRange.end - visibleRange.start + 1 },
+    (_, index) => visibleRange.start + index,
+  )
+
+  return getTriadInversions(selectedNote, selectedMode).reduce<string[]>(
+    (matches, inversion) => {
+      const isVisible = inversion.notes.every((note, index) => {
+        const stringIndex = selectedStringIndices[index]
+
+        return visibleFrets.some(
+          (fret) => getNoteForStringFret(stringIndex, fret) === note,
+        )
+      })
+
+      if (isVisible) {
+        matches.push(`${inversion.notes.join(' - ')} (${inversion.label})`)
+      }
+
+      return matches
+    },
+    [],
+  )
 }
 
 export function clamp(value: number, min: number, max: number) {

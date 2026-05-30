@@ -1,19 +1,30 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import Fretboard from './components/Fretboard'
-import { getVisibleRange } from './services/fretboard'
+import { getVisibleRange, getVisibleTriadInversions } from './services/fretboard'
 import './App.css'
 
 const noteNames = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
-const modes = ['Dur', 'Moll']
+const modes = ['Dur', 'Moll'] as const
 const lowStrings = ['E', 'A', 'D', 'G']
 
 function App() {
   const [selectedFret, setSelectedFret] = useState<number | null>(null)
   const [selectedNote, setSelectedNote] = useState(noteNames[0])
-  const [selectedMode, setSelectedMode] = useState(modes[0])
+  const [selectedMode, setSelectedMode] = useState<typeof modes[number]>(modes[0])
   const [selectedLowString, setSelectedLowString] = useState(lowStrings[0])
 
   const visibleRange = getVisibleRange(selectedFret)
+
+  const triadResults = useMemo(
+    () =>
+      getVisibleTriadInversions(
+        selectedNote,
+        selectedMode,
+        selectedLowString,
+        visibleRange,
+      ),
+    [selectedNote, selectedMode, selectedLowString, visibleRange],
+  )
 
   return (
     <main className="app-shell">
@@ -38,7 +49,7 @@ function App() {
               <span>Tonart</span>
               <select
                 value={selectedMode}
-                onChange={(event) => setSelectedMode(event.target.value)}
+                onChange={(event) => setSelectedMode(event.target.value as typeof modes[number])}
               >
                 {modes.map((mode) => (
                   <option key={mode} value={mode}>
@@ -78,6 +89,21 @@ function App() {
           <div>Bereich: {visibleRange.start} – {visibleRange.end}</div>
           <div>Tonart: {selectedNote} {selectedMode}</div>
           <div>Tiefe Saite: {selectedLowString}</div>
+        </div>
+
+        <div className="triad-results">
+          <div>
+            {triadResults.length > 0
+              ? 'Gefundene Dreiklang-Umkehrungen:'
+              : 'Keine Dreiklang-Umkehrungen im sichtbaren Bereich'}
+          </div>
+          {triadResults.length > 0 && (
+            <ul>
+              {triadResults.map((result) => (
+                <li key={result}>{result}</li>
+              ))}
+            </ul>
+          )}
         </div>
 
         <Fretboard
