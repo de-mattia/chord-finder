@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react'
 import Fretboard from './components/Fretboard'
 import { getVisibleRange, getVisibleTriadInversions } from './services/fretboard'
+import type { TriadMatch } from './services/fretboard'
 import './App.css'
 
 const noteNames = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
@@ -15,7 +16,7 @@ function App() {
 
   const visibleRange = getVisibleRange(selectedFret)
 
-  const triadResults = useMemo(
+  const triadMatches = useMemo<TriadMatch[]>(
     () =>
       getVisibleTriadInversions(
         selectedNote,
@@ -93,14 +94,14 @@ function App() {
 
         <div className="triad-results">
           <div>
-            {triadResults.length > 0
+            {triadMatches.length > 0
               ? 'Gefundene Dreiklang-Umkehrungen:'
               : 'Keine Dreiklang-Umkehrungen im sichtbaren Bereich'}
           </div>
-          {triadResults.length > 0 && (
+          {triadMatches.length > 0 && (
             <ul>
-              {triadResults.map((result) => (
-                <li key={result}>{result}</li>
+              {triadMatches.map((match) => (
+                <li key={match.label}>{`${match.notes.join(' - ')} (${match.label})`}</li>
               ))}
             </ul>
           )}
@@ -109,6 +110,7 @@ function App() {
         <Fretboard
           selectedFret={selectedFret}
           onSelectFret={setSelectedFret}
+          triadMatches={triadMatches}
         />
       </section>
     </main>

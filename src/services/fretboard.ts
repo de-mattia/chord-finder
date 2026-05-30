@@ -86,6 +86,19 @@ interface TriadInversion {
   notes: string[]
 }
 
+export interface TriadPosition {
+  stringIndex: number
+  fret: number
+  note: string
+  isRoot: boolean
+}
+
+export interface TriadMatch {
+  label: string
+  notes: string[]
+  positions: TriadPosition[]
+}
+
 const modeTriadIntervals: Record<Mode, number[]> = {
   Dur: [0, 4, 7],
   Moll: [0, 3, 7],
@@ -111,7 +124,7 @@ export function getVisibleTriadInversions(
   selectedMode: Mode,
   selectedLowString: string,
   visibleRange: VisibleRange,
-): string[] {
+): TriadMatch[] {
   const startStringIndex = strings.findIndex((stringName) => stringName === selectedLowString)
 
   if (startStringIndex === -1 || startStringIndex > strings.length - 3) {
@@ -128,24 +141,35 @@ export function getVisibleTriadInversions(
     (_, index) => visibleRange.start + index,
   )
 
-  return getTriadInversions(selectedNote, selectedMode).reduce<string[]>(
-    (matches, inversion) => {
-      const isVisible = inversion.notes.every((note, index) => {
+  return getTriadInversions(selectedNote, selectedMode)
+    .map((inversion) => {
+      const positions = inversion.notes.map((note, index) => {
         const stringIndex = selectedStringIndices[index]
-
-        return visibleFrets.some(
-          (fret) => getNoteForStringFret(stringIndex, fret) === note,
+        const fret = visibleFrets.find(
+          (visibleFret) => getNoteForStringFret(stringIndex, visibleFret) === note,
         )
+
+        return fret === undefined
+          ? null
+          : {
+              stringIndex,
+              fret,
+              note,
+              isRoot: note === selectedNote,
+            }
       })
 
-      if (isVisible) {
-        matches.push(`${inversion.notes.join(' - ')} (${inversion.label})`)
+      if (positions.some((position) => position === null)) {
+        return null
       }
 
-      return matches
-    },
-    [],
-  )
+      return {
+        label: inversion.label,
+        notes: inversion.notes,
+        positions: positions as TriadPosition[],
+      }
+    })
+    .filter((match): match is TriadMatch => match !== null)
 }
 
 export function clamp(value: number, min: number, max: number) {

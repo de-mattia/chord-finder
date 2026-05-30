@@ -7,15 +7,18 @@ import {
   markerFrets,
   strings,
 } from '../services/fretboard'
+import type { TriadMatch } from '../services/fretboard'
 
 interface FretboardProps {
   selectedFret: number | null
   onSelectFret: (fret: number) => void
+  triadMatches: TriadMatch[]
 }
 
 function Fretboard({
   selectedFret,
   onSelectFret,
+  triadMatches,
 }: FretboardProps) {
   const svgConfig = useMemo(() => createSvgConfig(), [])
   const visibleArea = useMemo(
@@ -26,6 +29,13 @@ function Fretboard({
     () => getViewBox(selectedFret, visibleArea, svgConfig),
     [selectedFret, visibleArea, svgConfig],
   )
+
+  const reversedStringIndices = useMemo(
+    () => Array.from({ length: strings.length }, (_, index) => strings.length - 1 - index),
+    [],
+  )
+
+  const triadColors = ['#2563eb', '#16a34a', '#d97706', '#9333ea', '#be123c']
 
   return (
     <svg viewBox={viewBox} className="fretboard-svg" aria-label="Gitarren-Griffbrett">
@@ -46,8 +56,10 @@ function Fretboard({
         fill="url(#wood-grain)"
       />
 
-      {svgConfig.stringPositions.map((y, stringIndex) =>
-        svgConfig.fretPositions.map((x, fret) => {
+      {reversedStringIndices.map((stringIndex, renderedIndex) => {
+        const y = svgConfig.stringPositions[renderedIndex]
+
+        return svgConfig.fretPositions.map((x, fret) => {
           const note = getNoteForStringFret(stringIndex, fret)
 
           return (
@@ -62,19 +74,43 @@ function Fretboard({
               {note}
             </text>
           )
-        }),
-      )}
+        })
+      })}
 
-      {svgConfig.stringPositions.map((y, index) => (
+      {reversedStringIndices.map((stringIndex, renderedIndex) => (
         <line
-          key={`string-${index}`}
+          key={`string-${stringIndex}`}
           x1={svgConfig.left}
           x2={svgConfig.left + svgConfig.boardWidth + 18}
-          y1={y}
-          y2={y}
+          y1={svgConfig.stringPositions[renderedIndex]}
+          y2={svgConfig.stringPositions[renderedIndex]}
           className="fret-string"
         />
       ))}
+
+      {triadMatches.flatMap((match, matchIndex) =>
+        match.positions.map((position, index) => {
+          const x = svgConfig.fretPositions[position.fret]
+          const y = svgConfig.stringPositions[strings.length - 1 - position.stringIndex]
+          const chordColor = triadColors[matchIndex % triadColors.length]
+          const dotStyle = {
+            fill: chordColor,
+            stroke: '#fff',
+            strokeWidth: position.isRoot ? 2 : 1.5,
+          }
+
+          return (
+            <circle
+              key={`triad-${match.label}-${position.stringIndex}-${position.fret}-${index}`}
+              cx={x}
+              cy={y}
+              r={position.isRoot ? 8 : 6}
+              className={position.isRoot ? 'triad-root-dot' : 'triad-dot'}
+              style={dotStyle}
+            />
+          )
+        }),
+      )}
 
       {svgConfig.fretPositions.map((x, fret) => {
         const isNut = fret === 0
@@ -123,14 +159,14 @@ function Fretboard({
         )
       })}
 
-      {svgConfig.stringPositions.map((y, index) => (
+      {reversedStringIndices.map((stringIndex, renderedIndex) => (
         <text
-          key={`string-label-${index}`}
+          key={`string-label-${stringIndex}`}
           x={svgConfig.left - 42}
-          y={y + 6}
+          y={svgConfig.stringPositions[renderedIndex] + 6}
           className="string-label"
         >
-          {strings[index]}
+          {strings[stringIndex]}
         </text>
       ))}
     </svg>

@@ -151,6 +151,18 @@ body {
   fill: #4338ca;
 }
 
+.triad-dot {
+  fill: rgba(59, 130, 246, 0.85);
+  stroke: #fff;
+  stroke-width: 1.5px;
+}
+
+.triad-root-dot {
+  fill: #f59e0b;
+  stroke: #fff;
+  stroke-width: 2px;
+}
+
 .note-grid-label {
   fill: rgba(51, 65, 85, 0.28);
   font-size: 9px;
