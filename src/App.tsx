@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import Fretboard from './components/Fretboard'
 import { getVisibleRange, getVisibleTriadInversions } from './services/fretboard'
 import type { TriadMatch } from './services/fretboard'
@@ -6,15 +6,28 @@ import './App.css'
 
 const noteNames = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
 const modes = ['Dur', 'Moll'] as const
-const lowStrings = ['E', 'A', 'D', 'G']
+const lowStrings = ['E', 'A', 'D', 'G'] as const
+const stringCounts = [3, 4] as const
 
 function App() {
   const [selectedFret, setSelectedFret] = useState<number | null>(null)
   const [selectedNote, setSelectedNote] = useState(noteNames[0])
   const [selectedMode, setSelectedMode] = useState<typeof modes[number]>(modes[0])
-  const [selectedLowString, setSelectedLowString] = useState(lowStrings[0])
+  const [selectedLowString, setSelectedLowString] = useState<typeof lowStrings[number]>(lowStrings[0])
+  const [selectedStringCount, setSelectedStringCount] = useState<typeof stringCounts[number]>(stringCounts[0])
 
   const visibleRange = getVisibleRange(selectedFret)
+
+  const availableLowStrings = useMemo(
+    () => (selectedStringCount === 4 ? lowStrings.slice(0, 3) : lowStrings),
+    [selectedStringCount],
+  )
+
+  useEffect(() => {
+    if (!availableLowStrings.includes(selectedLowString)) {
+      setSelectedLowString(availableLowStrings[0])
+    }
+  }, [availableLowStrings, selectedLowString])
 
   const triadMatches = useMemo<TriadMatch[]>(
     () =>
@@ -22,9 +35,10 @@ function App() {
         selectedNote,
         selectedMode,
         selectedLowString,
+        selectedStringCount,
         visibleRange,
       ),
-    [selectedNote, selectedMode, selectedLowString, visibleRange],
+    [selectedNote, selectedMode, selectedLowString, selectedStringCount, visibleRange],
   )
 
   return (
@@ -61,12 +75,26 @@ function App() {
             </label>
 
             <label className="toolbar-control">
+              <span>Strings</span>
+              <select
+                value={selectedStringCount}
+                onChange={(event) => setSelectedStringCount(Number(event.target.value) as typeof stringCounts[number])}
+              >
+                {stringCounts.map((count) => (
+                  <option key={count} value={count}>
+                    {count}
+                  </option>
+                ))}
+              </select>
+            </label>
+
+            <label className="toolbar-control">
               <span>Tiefe Saite</span>
               <select
                 value={selectedLowString}
-                onChange={(event) => setSelectedLowString(event.target.value)}
+                onChange={(event) => setSelectedLowString(event.target.value as typeof lowStrings[number])}
               >
-                {lowStrings.map((stringName) => (
+                {availableLowStrings.map((stringName) => (
                   <option key={stringName} value={stringName}>
                     {stringName}
                   </option>
@@ -89,22 +117,8 @@ function App() {
           <div>{selectedFret === null ? 'Gesamtes Griffbrett' : `Zoom auf Bund ${selectedFret}`}</div>
           <div>Bereich: {visibleRange.start} – {visibleRange.end}</div>
           <div>Tonart: {selectedNote} {selectedMode}</div>
+          <div>Saiten: {selectedStringCount}</div>
           <div>Tiefe Saite: {selectedLowString}</div>
-        </div>
-
-        <div className="triad-results">
-          <div>
-            {triadMatches.length > 0
-              ? 'Gefundene Dreiklang-Umkehrungen:'
-              : 'Keine Dreiklang-Umkehrungen im sichtbaren Bereich'}
-          </div>
-          {triadMatches.length > 0 && (
-            <ul>
-              {triadMatches.map((match) => (
-                <li key={match.label}>{`${match.notes.join(' - ')} (${match.label})`}</li>
-              ))}
-            </ul>
-          )}
         </div>
 
         <Fretboard

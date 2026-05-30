@@ -123,19 +123,19 @@ export function getVisibleTriadInversions(
   selectedNote: string,
   selectedMode: Mode,
   selectedLowString: string,
+  stringCount: number,
   visibleRange: VisibleRange,
 ): TriadMatch[] {
   const startStringIndex = strings.findIndex((stringName) => stringName === selectedLowString)
 
-  if (startStringIndex === -1 || startStringIndex > strings.length - 3) {
+  if (startStringIndex === -1 || startStringIndex > strings.length - stringCount) {
     return []
   }
 
-  const selectedStringIndices = [
-    startStringIndex,
-    startStringIndex + 1,
-    startStringIndex + 2,
-  ]
+  const selectedStringIndices = Array.from(
+    { length: stringCount },
+    (_, index) => startStringIndex + index,
+  )
   const visibleFrets = Array.from(
     { length: visibleRange.end - visibleRange.start + 1 },
     (_, index) => visibleRange.start + index,
@@ -143,23 +143,34 @@ export function getVisibleTriadInversions(
 
   return getTriadInversions(selectedNote, selectedMode)
     .map((inversion) => {
-      const positions = inversion.notes.map((note, index) => {
-        const stringIndex = selectedStringIndices[index]
-        const fret = visibleFrets.find(
-          (visibleFret) => getNoteForStringFret(stringIndex, visibleFret) === note,
+      const positions = selectedStringIndices.map((stringIndex) => {
+        const fret = visibleFrets.find((visibleFret) =>
+          inversion.notes.includes(getNoteForStringFret(stringIndex, visibleFret)),
         )
 
-        return fret === undefined
-          ? null
-          : {
-              stringIndex,
-              fret,
-              note,
-              isRoot: note === selectedNote,
-            }
+        if (fret === undefined) {
+          return null
+        }
+
+        const note = getNoteForStringFret(stringIndex, fret)
+
+        return {
+          stringIndex,
+          fret,
+          note,
+          isRoot: note === selectedNote,
+        }
       })
 
       if (positions.some((position) => position === null)) {
+        return null
+      }
+
+      const visibleNotes = new Set(
+        positions.map((position) => position?.note),
+      )
+
+      if (visibleNotes.size !== 3) {
         return null
       }
 
