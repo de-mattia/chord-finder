@@ -51,6 +51,36 @@ body {
   margin-bottom: 18px;
 }
 
+.toolbar-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+}
+
+.toolbar-control {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-weight: 600;
+  color: #475569;
+}
+
+.toolbar-control span {
+  font-size: 0.85rem;
+}
+
+.toolbar-control select {
+  min-width: 140px;
+  border-radius: 12px;
+  border: 1px solid rgba(148, 163, 184, 0.35);
+  padding: 10px 12px;
+  background: #f8fafc;
+  color: #0f172a;
+  font: inherit;
+  appearance: none;
+}
+
 .fretboard-meta {
   display: flex;
   gap: 10px;
